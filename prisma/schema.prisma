@@ -1,0 +1,728 @@
+generator client {
+  provider               = "prisma-client"
+  output                 = "../generated/prisma"
+  generatedFileExtension = "ts"
+  importFileExtension    = "js"
+  moduleFormat           = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model banner {
+  banner_id     Int       @id @default(autoincrement()) @db.SmallInt
+  banner_title  String?   @db.VarChar(255)
+  banner_image  String?   @db.VarChar(255)
+  banner_status String?   @db.VarChar(10)
+  news_id       Int?      @db.SmallInt
+  created_by    Int?      @db.SmallInt
+  created_at    DateTime? @default(now()) @db.Timestamp(6)
+  updated_at    DateTime? @db.Timestamp(6)
+}
+
+model branch {
+  bra_id       Int       @id(map: "division_test_pkey") @default(autoincrement())
+  bra_name     String?   @db.VarChar(100)
+  dept_id      Int?
+  created_at   DateTime? @default(now()) @db.Timestamp(6)
+  updated_at   DateTime? @db.Timestamp(6)
+  created_by   Int?
+  co_image     String?   @db.VarChar(255)
+  str_image    String?   @db.VarChar(255)
+  phone_number String?   @db.VarChar(500)
+  location     String?   @db.VarChar(255)
+  email        String?   @db.VarChar(255)
+  status       String?   @db.VarChar(3)
+  address      String?
+  bra_image    String?   @db.VarChar(255)
+  mission      String?
+  number       Int?
+}
+
+model center {
+  center_id     Int       @id(map: "center_service_pkey") @default(autoincrement()) @db.SmallInt
+  center_name   String?   @db.VarChar(255)
+  center_tel    String?   @db.VarChar(50)
+  center_status String?   @db.VarChar(10)
+  village_id    Int?      @db.SmallInt
+  district_id   Int?      @db.SmallInt
+  latitude      String?   @db.VarChar(50)
+  longtitude    String?   @db.VarChar(50)
+  created_at    DateTime? @default(now()) @db.Timestamp(6)
+  updated_at    DateTime? @db.Timestamp(6)
+  created_by    Int?
+  center_image  String?   @db.VarChar(100)
+  province_id   Int?
+  department_id Int?
+  branch_id     Int?
+  division_id   Int?
+  unit_id       Int?
+}
+
+model comments {
+  comment_id Int       @id @default(autoincrement()) @db.SmallInt
+  news_id    Int?      @db.SmallInt
+  full_name  String?   @db.VarChar(50)
+  email      String?   @db.VarChar(14)
+  message    String?   @db.VarChar(255)
+  status     String?   @db.VarChar(10)
+  created_at DateTime? @db.Timestamptz(6)
+  updated_at DateTime? @db.Timestamptz(6)
+  created_by Int?      @db.SmallInt
+}
+
+model confession {
+  id         Int       @id(map: "permission_copy1_pkey") @default(autoincrement()) @db.SmallInt
+  title      String?   @db.VarChar(255)
+  image      String?   @db.VarChar(255)
+  video_url  String?   @db.VarChar(255)
+  status     String?   @db.VarChar(5)
+  created_at DateTime? @default(now()) @db.Date
+  updated_at DateTime? @db.Date
+  created_by Int?      @db.SmallInt
+  file_url   String?   @db.VarChar(255)
+}
+
+model content_type {
+  content_type_id   Int       @id @default(autoincrement())
+  content_type_name String?   @db.VarChar(255)
+  created_by        Int?      @db.SmallInt
+  created_at        DateTime? @default(now()) @db.Timestamp(6)
+  updated_at        DateTime? @db.Timestamp(6)
+  content_code      String?   @db.VarChar(20)
+}
+
+model department {
+  dept_id    Int       @id(map: "department_test_pkey") @default(autoincrement())
+  dept_name  String?   @db.VarChar(100)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  updated_at DateTime? @db.Timestamp(6)
+  created_by Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model feedback {
+  id           Int       @id @default(autoincrement())
+  full_name    String?   @db.VarChar(100)
+  phone_number String?   @db.VarChar(30)
+  description  String?   @db.VarChar(255)
+  created_at   DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model identity_card {
+  identity_card_id    Int       @id(map: "card_type_pkey") @default(autoincrement())
+  identity_card_name  String?   @db.VarChar(100)
+  identity_card_image String?   @db.VarChar(100)
+  created_at          DateTime? @db.Timestamptz(6)
+  updated_at          DateTime? @db.Timestamptz(6)
+  cust_id             Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model job {
+  id          Int       @id(map: "job_position_copy1_pkey") @default(autoincrement())
+  title       String?   @db.VarChar(100)
+  image       String?   @db.VarChar(255)
+  file_url    String?   @db.VarChar(255)
+  status      String?   @db.VarChar(50)
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+  updated_at  DateTime? @db.Timestamp(6)
+  created_by  Int?
+  updated_by  Int?
+  position_id Int?
+  start_date  DateTime? @db.Timestamptz(6)
+  end_date    DateTime? @db.Timestamptz(6)
+  sub_title   String?   @db.VarChar(255)
+  description String?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model job_apply {
+  id           Int       @id(map: "job_copy1_pkey") @default(autoincrement())
+  full_name    String?   @db.VarChar(100)
+  email        String?   @db.VarChar(255)
+  cv_file      String?   @db.VarChar(255)
+  status       String?   @db.VarChar(50)
+  created_at   DateTime? @default(now()) @db.Timestamp(6)
+  updated_at   DateTime? @db.Timestamp(6)
+  updated_by   Int?
+  phone_number String?   @db.VarChar(255)
+  address      String?   @db.VarChar(255)
+  note         String?   @db.VarChar(5000)
+  job          Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model job_position {
+  id          Int       @id(map: "knowledge_copy1_pkey") @default(autoincrement())
+  title       String?   @db.VarChar(100)
+  status      String?   @db.VarChar(50)
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+  updated_at  DateTime? @db.Timestamp(6)
+  created_by  Int?
+  updated_by  Int?
+  description String?   @db.VarChar(5000)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model knowledge {
+  k_id        Int       @id @default(autoincrement())
+  tittle      String?   @db.VarChar(100)
+  cover_image String?   @db.VarChar(255)
+  video_url   String?   @db.VarChar(255)
+  status      String?   @db.VarChar(50)
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+  updated_at  DateTime? @db.Timestamp(6)
+  created_by  Int?
+  updated_by  Int?
+}
+
+model locations {
+  location_id   Int       @id @default(autoincrement())
+  location_name String?   @db.VarChar(100)
+  latitude      String?   @db.VarChar(255)
+  longitude     String?   @db.VarChar(255)
+  cust_id       Int?
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime? @db.Timestamp(6)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model magazine {
+  id         Int       @id(map: "knowledge_copy1_pkey1") @default(autoincrement())
+  image      String?   @db.VarChar(255)
+  file_url   String?   @db.VarChar(255)
+  status     String?   @db.VarChar(50)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  updated_at DateTime? @db.Timestamp(6)
+  created_by Int?
+  updated_by Int?
+  title      String?   @db.VarChar(500)
+}
+
+model meterhistory {
+  id             Int       @id @default(autoincrement())
+  account_no     String?   @db.VarChar(20)
+  account_name   String?   @db.VarChar(255)
+  account_type   String?   @db.VarChar(100)
+  account_status String?   @db.VarChar(20)
+  favorite       String?   @db.VarChar(10)
+  phone_no       String?   @db.VarChar(30)
+  created_at     DateTime? @default(now()) @db.Timestamp(6)
+  updated_at     DateTime? @db.Timestamp(6)
+  province_id    Int?
+  bill_date      DateTime? @db.Date
+}
+
+model migrations {
+  id        Int    @id(map: "PK_8c82d7f526340ab734260ea46be")
+  timestamp BigInt
+  name      String @db.VarChar
+}
+
+model news {
+  news_id            Int       @id @default(autoincrement()) @db.SmallInt
+  news_title_la      String?   @db.VarChar(1000)
+  news_type_id       Int?      @db.SmallInt
+  news_content_la    String?
+  vido_url           String?   @db.VarChar(500)
+  news_images        String[]
+  posting_date       DateTime? @db.Date
+  created_by         Int?      @db.SmallInt
+  created_at         DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime? @db.Timestamptz(6)
+  news_staus         String?   @db.VarChar(10)
+  show_slide         Int?
+  tags               String?   @db.VarChar(100)
+  news_sub_title_la  String?   @db.VarChar(5000)
+  news_title_eng     String?   @db.VarChar(5000)
+  news_content_eng   String?
+  news_sub_title_eng String?   @db.VarChar(1000)
+  tax_news_id        Int?      @db.SmallInt
+  posting_time       DateTime? @db.Timestamp(6)
+  image              String?   @db.VarChar(1000)
+}
+
+model news_type {
+  news_type_id     Int       @id(map: "category_pkey") @default(autoincrement()) @db.SmallInt
+  news_type_name   String?   @db.VarChar(255)
+  news_type_desc   String?
+  news_type_status String?   @db.VarChar(10)
+  created_by       Int?      @db.SmallInt
+  created_at       DateTime? @default(now()) @db.Timestamp(6)
+  updated_at       DateTime? @db.Timestamp(6)
+}
+
+model noti {
+  noti_id      Int       @id @default(autoincrement()) @db.SmallInt
+  title_head   String?   @db.VarChar(255)
+  sub_title    String?   @db.VarChar(150)
+  description  String?
+  start_date   DateTime? @db.Timestamptz(6)
+  end_date     DateTime? @db.Timestamptz(6)
+  start_time   String?   @db.VarChar(30)
+  end_time     String?   @db.VarChar(30)
+  status       String?   @db.VarChar(10)
+  remark       String?   @db.VarChar(200)
+  created_at   DateTime? @default(now()) @db.Timestamp(6)
+  updated_at   DateTime? @db.Timestamp(6)
+  created_by   Int?      @db.SmallInt
+  noti_type_id Int?      @db.SmallInt
+  noti_status  String?   @db.VarChar(10)
+  facebook_url String?   @db.VarChar(255)
+  file_url     String?   @db.VarChar(255)
+}
+
+model noti_detail {
+  noti_detail_id Int       @id @default(autoincrement()) @db.SmallInt
+  noti_id        Int?      @db.SmallInt
+  province_id    Int?      @db.SmallInt
+  district_id    Int?      @db.SmallInt
+  created_at     DateTime? @default(now()) @db.Timestamp(6)
+  updated_at     DateTime? @db.Timestamp(6)
+  created_by     Int?      @db.SmallInt
+  village_id     Int?      @db.SmallInt
+  facebook_url   String?   @db.VarChar(255)
+  file_url       String?   @db.VarChar(255)
+}
+
+model noti_log {
+  noti_log_id    Int       @id @default(autoincrement()) @db.SmallInt
+  noti_detail_id Int?      @db.SmallInt
+  user_id        Int?      @db.SmallInt
+  status         Boolean?  @default(true)
+  created_by     Int?      @db.SmallInt
+  created_at     DateTime? @default(now()) @db.Timestamp(6)
+  updated_at     DateTime? @db.Timestamp(6)
+}
+
+model noti_type {
+  noti_type_id Int       @id @default(autoincrement()) @db.SmallInt
+  type_name    String?   @db.VarChar(255)
+  created_at   DateTime? @db.Timestamp(6)
+  updated_at   DateTime? @db.Timestamp(6)
+  created_by   Int?      @db.SmallInt
+}
+
+model notice {
+  notice_id         Int       @id @default(autoincrement()) @db.SmallInt
+  notice_title      String?   @db.VarChar(255)
+  notice_content    String?   @db.VarChar(255)
+  notice_file       String?   @db.VarChar(255)
+  notice_start_date DateTime? @db.Timestamp(0)
+  notice_end_date   DateTime? @db.Timestamp(0)
+  notice_status     String?   @db.VarChar(10)
+  notice_authorize  String?   @db.VarChar(255)
+  created_at        DateTime? @default(now()) @db.Timestamp(6)
+  updated_at        DateTime? @db.Timestamp(6)
+  created_by        Int?      @db.SmallInt
+  notice_type_id    Int?      @db.SmallInt
+  content_type_id   Int?      @db.SmallInt
+}
+
+model notice_detail {
+  notice_detail_id Int       @id @default(autoincrement()) @db.SmallInt
+  notice_id        Int?      @db.SmallInt
+  province_id      Int?      @db.SmallInt
+  district_id      Int?      @db.SmallInt
+  user_id          Int?      @db.SmallInt
+  created_by       Int?      @db.SmallInt
+  created_at       DateTime? @default(now()) @db.Date
+  updated_at       DateTime? @db.Date
+  detail_type_id   Int?      @db.SmallInt
+}
+
+model notice_detail_type {
+  noti_detail_id   Int       @id(map: "notification_type_copy1_pkey") @default(autoincrement()) @db.SmallInt
+  noti_detail_name String?   @db.VarChar(255)
+  status           String?   @db.VarChar(10)
+  created_by       String?   @db.VarChar(255)
+  created_at       DateTime? @db.Timestamp(6)
+  updated_at       DateTime? @db.Timestamp(6)
+  noti_detail_code String?   @db.VarChar(20)
+}
+
+model notice_type {
+  notice_type_id   Int       @id @default(autoincrement()) @db.SmallInt
+  notice_type_name String?   @db.VarChar(255)
+  created_by       Int?      @db.SmallInt
+  created_at       DateTime? @default(now()) @db.Timestamp(6)
+  updated_at       DateTime? @db.Timestamp(6)
+  notice_code      String?   @db.VarChar(20)
+}
+
+model notification_type {
+  id               Int       @id(map: "noti_detail_type_pkey") @default(autoincrement()) @db.SmallInt
+  name             String?   @db.VarChar(255)
+  status           String?   @db.VarChar(10)
+  created_by       String?   @db.VarChar(255)
+  created_at       DateTime? @db.Timestamp(6)
+  updated_at       DateTime? @db.Timestamp(6)
+  noti_detail_code String?   @db.VarChar(20)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model pad {
+  id          Int       @default(autoincrement()) @db.SmallInt
+  title       String?   @db.VarChar(255)
+  description String?   @db.VarChar(2000)
+  image       String?   @db.VarChar(255)
+  file_url    String?   @db.VarChar(255)
+  start_date  DateTime? @db.Timestamptz(6)
+  end_date    DateTime? @db.Timestamptz(6)
+  status      String?   @db.VarChar(3)
+  created_at  DateTime? @db.Date
+  created_by  Int?      @db.SmallInt
+  updated_by  Int?      @db.SmallInt
+  updated_at  DateTime? @db.Date
+
+  @@ignore
+}
+
+model permission {
+  permission_id     Int       @id @default(autoincrement()) @db.SmallInt
+  user_id           Int?      @unique(map: "user_uniqes") @db.SmallInt
+  create            String?   @db.VarChar(5)
+  read              String?   @db.VarChar(5)
+  execute           String?   @db.VarChar(5)
+  delete            String?   @db.VarChar(5)
+  view              String?   @db.VarChar(5)
+  update            String?   @db.VarChar(5)
+  created_at        DateTime? @default(now()) @db.Timestamp(6)
+  updated_at        DateTime? @db.Timestamp(6)
+  created_by        Int?      @db.SmallInt
+  permission_status String?   @db.VarChar(10)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model policy {
+  id         Int       @id(map: "job_position_copy1_pkey1") @default(autoincrement())
+  title      String?   @db.VarChar(2000)
+  status     String?   @db.VarChar(50)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  updated_at DateTime? @db.Timestamp(6)
+  created_by Int?
+  updated_by Int?
+  no         String?   @db.VarChar(200)
+  date       DateTime? @db.Date
+  file_url   String?   @db.VarChar(1000)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model price {
+  id         Int       @id(map: "job_copy1_pkey1") @default(autoincrement())
+  type       Int?
+  image      String?   @db.VarChar(2000)
+  status     String?   @db.VarChar(50)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  updated_at DateTime? @db.Timestamp(6)
+  created_by Int?
+  updated_by Int?
+  title      String?   @db.VarChar(255)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model price_service {
+  id         Int       @id @default(autoincrement())
+  title      String?   @db.VarChar(2000)
+  status     String?   @db.VarChar(50)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  updated_at DateTime? @db.Timestamp(6)
+  created_by Int?
+  updated_by Int?
+  no         String?   @db.VarChar(100)
+  date       DateTime? @db.Date
+  file_url   String?   @db.VarChar(2000)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model structures {
+  str_id     Int       @id @default(autoincrement())
+  str_name   String?   @db.VarChar(100)
+  str_image  String?   @db.VarChar(255)
+  str_status String?   @db.VarChar(50)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  updated_at DateTime? @db.Timestamp(6)
+  created_by Int?
+  updated_by Int?
+  str_type   Int?      @db.SmallInt
+}
+
+model tax_news {
+  tax_news_id   Int       @id @default(autoincrement()) @db.SmallInt
+  tax_news_name String?   @db.VarChar(255)
+  created_by    Int?      @db.SmallInt
+  created_at    DateTime? @default(now()) @db.Timestamp(6)
+  updated_at    DateTime? @db.Timestamp(6)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model users {
+  user_id       Int       @id @default(autoincrement()) @db.SmallInt
+  username      String?   @db.VarChar(100)
+  password      String?   @db.VarChar(100)
+  first_name    String?   @db.VarChar(100)
+  last_name     String?   @db.VarChar(100)
+  phone_no      String?   @db.VarChar(50)
+  email         String?   @db.VarChar(50)
+  verified_at   String?   @db.VarChar(50)
+  pin_code      String?   @db.VarChar(100)
+  access_token  String?   @db.VarChar(255)
+  user_image    String?   @db.VarChar(100)
+  users_status  String?   @db.VarChar(30)
+  last_login    DateTime? @db.Date
+  ip_address    String?   @db.VarChar(30)
+  province_id   Int?      @db.SmallInt
+  user_group_id Int?      @db.SmallInt
+  created_at    DateTime? @default(now()) @db.Timestamp(6)
+  updated_at    DateTime? @db.Timestamp(6)
+  created_by    Int?      @db.SmallInt
+  access_noti   String?   @db.VarChar(255)
+  otp_cycle     Int?      @db.SmallInt
+  otp_start     DateTime? @db.Timestamp(6)
+  otp_end       DateTime? @db.Timestamp(6)
+  refresh_token String?   @db.VarChar(255)
+  birthday      DateTime? @db.Date
+  district_id   Int?      @db.SmallInt
+  village_id    Int?      @db.SmallInt
+  role_id       Int?      @db.SmallInt
+  last_signin   DateTime? @db.Timestamp(6)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model vision {
+  v_id        Int       @id @default(autoincrement())
+  title       String?   @db.VarChar(100)
+  description String?
+  type        Int?      @db.SmallInt
+  slogan      String?
+  image       String?   @db.VarChar(255)
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+  updated_at  DateTime? @db.Timestamp(6)
+  created_by  Int?
+  updated_by  Int?
+  status      String?   @db.VarChar(3)
+}
+
+model wservice {
+  service_id         Int       @id(map: "service_confiiguration_pkey") @default(autoincrement()) @db.SmallInt
+  service_name       String?   @db.VarChar(255)
+  service_url        String?   @db.VarChar(255)
+  service_port       String?   @db.VarChar(10)
+  service_ip         String?   @db.VarChar(255)
+  service_proxy      String?   @db.VarChar(255)
+  service_user       String?   @db.VarChar(255)
+  service_pass       String?   @db.VarChar(255)
+  service_token      String?   @db.VarChar(255)
+  service_secret_key String?   @db.VarChar(255)
+  service_channel    String?   @db.VarChar(255)
+  service_provider   String?   @db.VarChar(255)
+  service_path       String?   @db.VarChar(255)
+  service_status     String?   @db.VarChar(20)
+  created_at         DateTime? @default(now()) @db.Timestamp(6)
+  updated_at         DateTime? @db.Timestamp(6)
+  created_by         Int?      @db.SmallInt
+  province_id        Int?
+  env_type           String?   @db.VarChar(50)
+  method             String?   @db.VarChar(50)
+  service_code       String?   @db.VarChar(30)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model admin {
+  id            Int       @id(map: "users_copy1_pkey") @default(autoincrement()) @db.SmallInt
+  username      String?   @db.VarChar(100)
+  password      String?   @db.VarChar(100)
+  first_name    String?   @db.VarChar(100)
+  last_name     String?   @db.VarChar(100)
+  phone_no      String?   @unique(map: "users_copy1_phone_no_key") @db.VarChar(50)
+  email         String?   @db.VarChar(50)
+  access_token  String?   @db.VarChar(255)
+  image         String?   @db.VarChar(100)
+  status        String?   @db.VarChar(30)
+  last_login    DateTime? @db.Date
+  ip_address    String?   @db.VarChar(30)
+  created_at    DateTime? @default(now()) @db.Timestamp(6)
+  updated_at    DateTime? @db.Timestamp(6)
+  created_by    Int?      @db.SmallInt
+  refresh_token String?   @db.VarChar(255)
+  birthday      DateTime? @db.Date
+}
+
+model admin_detail {
+  id            Int       @id @default(autoincrement())
+  province_id   Int?
+  district_id   Int?
+  village_id    Int?
+  branch_id     Int?
+  department_id Int?
+  unit_id       Int?
+  role_id       Int?
+  admin_id      Int?
+  created_at    DateTime? @db.Timestamp(6)
+  updated_at    DateTime? @db.Timestamp(6)
+  u_role_id     Int?
+}
+
+model customer {
+  cust_id        Int       @id @default(autoincrement()) @db.SmallInt
+  username       String?   @db.VarChar(100)
+  password       String?   @db.VarChar(100)
+  first_name     String?   @db.VarChar(100)
+  last_name      String?   @db.VarChar(100)
+  phone_no       String?   @db.VarChar(30)
+  email          String?   @db.VarChar(40)
+  image          String?   @db.VarChar(100)
+  verified_at    String?   @db.VarChar(100)
+  pin_code       String?   @db.VarChar(30)
+  access_token   String?   @db.VarChar(100)
+  remember_token String?   @db.VarChar(100)
+  status         String?   @db.VarChar(10)
+  birthday       DateTime? @db.Date
+  joining_date   DateTime? @db.Date
+  cust_type_id   Int?      @db.SmallInt
+  province_id    Int?      @db.SmallInt
+  role_id        Int?      @db.SmallInt
+  last_login     DateTime? @db.Date
+}
+
+model customer_group {
+  cust_group_id   Int       @id(map: "customer_type_pkey") @default(autoincrement())
+  cust_group_name String?   @db.VarChar(100)
+  created_date    DateTime? @db.Timetz(6)
+  updated_date    DateTime? @db.Timetz(6)
+  created_by      Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model job_position_copy1 {
+  id          Int       @id(map: "job_position_copy1_pkey2") @default(autoincrement())
+  title       String?   @db.VarChar(100)
+  status      String?   @db.VarChar(50)
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+  updated_at  DateTime? @db.Timestamp(6)
+  created_by  Int?
+  updated_by  Int?
+  description String?   @db.VarChar(5000)
+}
+
+model pay_servicetime {
+  id            Int       @id(map: "payment_servicetime_pkey") @default(autoincrement())
+  provider_code String?   @db.VarChar(50)
+  start_time    DateTime? @db.Time(6)
+  end_time      DateTime? @db.Time(6)
+  aditional     String?   @db.VarChar(50)
+  stop_month    String?   @db.VarChar(50)
+  onday         String?   @db.VarChar(50)
+  stop_week     String?   @db.VarChar(50)
+  status        String?   @db.VarChar(50)
+  created_at    DateTime? @db.Timestamp(6)
+  updated_at    DateTime? @db.Timestamp(6)
+}
+
+model payment {
+  id                Int       @id(map: "payment_log_copy1_pkey1") @default(autoincrement())
+  xref              String?   @db.VarChar(255)
+  status_code       String?   @db.VarChar(100)
+  provider_code     String?   @db.VarChar(100)
+  account_no        String?   @db.VarChar(50)
+  account_name      String?   @db.VarChar(255)
+  phone_no          String?   @db.VarChar(50)
+  bill_amt          BigInt?
+  province_id       Int?
+  ex_source         String?   @db.VarChar(100)
+  date_log          DateTime? @db.Date
+  status            String?   @db.VarChar(20)
+  user_req          String?   @db.VarChar(255)
+  offsetacc         String?   @db.VarChar(50)
+  txacc             String?   @db.VarChar(50)
+  statement_bill_no String?   @db.VarChar(100)
+  ip_address        String?   @db.VarChar(50)
+  created_at        DateTime? @db.Timestamp(6)
+  updated_at        DateTime? @db.Timestamp(6)
+  body_req          String?
+  bill_date         DateTime? @db.Date
+  payment_way       Int?
+  payment_id        String?   @db.VarChar(50)
+}
+
+model payment_his {
+  id                Int       @id(map: "payment_log_copy1_pkey") @default(autoincrement())
+  xref              String?   @db.VarChar(255)
+  status_code       String?   @db.VarChar(100)
+  provider_code     String?   @db.VarChar(100)
+  account_no        String?   @db.VarChar(50)
+  account_name      String?   @db.VarChar(255)
+  phone_no          String?   @db.VarChar(50)
+  bill_amt          BigInt?
+  province_id       Int?
+  ex_source         String?   @db.VarChar(100)
+  date_log          DateTime? @db.Date
+  status            String?   @db.VarChar(20)
+  user_req          String?   @db.VarChar(255)
+  offsetacc         String?   @db.VarChar(50)
+  txacc             String?   @db.VarChar(50)
+  statement_bill_no String?   @db.VarChar(100)
+  ip_address        String?   @db.VarChar(50)
+  created_at        DateTime? @db.Timestamp(6)
+  updated_at        DateTime? @db.Timestamp(6)
+  body_req          String?
+  bill_date         DateTime? @db.Date
+  payment_way       Int?
+  payment_id        String?   @db.VarChar(50)
+}
+
+model payment_log {
+  id                Int       @id @default(autoincrement())
+  xref              String?   @db.VarChar(255)
+  status_code       String?   @db.VarChar(30)
+  provider_code     String?   @db.VarChar(100)
+  account_no        String?   @db.VarChar(50)
+  account_name      String?   @db.VarChar(255)
+  phone_no          String?   @db.VarChar(50)
+  bill_amt          BigInt?
+  province_id       Int?
+  ex_source         String?   @db.VarChar(100)
+  date_log          DateTime? @db.Date
+  status            String?   @db.VarChar(100)
+  offsetacc         String?   @db.VarChar(50)
+  txacc             String?   @db.VarChar(50)
+  statement_bill_no String?   @db.VarChar(100)
+  ip_address        String?   @db.VarChar(50)
+  created_at        DateTime? @default(now()) @db.Timestamp(6)
+  updated_at        DateTime? @db.Timestamp(6)
+  body_req          String?
+  payment_way       Int?
+  payment_id        String?   @db.VarChar(50)
+  bill_date         String?   @db.VarChar(50)
+  account_type      String?   @db.VarChar(50)
+  user_req          Int?
+  actual_amt        BigInt?
+  outstanding       BigInt?
+  supply_type       String?   @db.VarChar(255)
+}
+
+model role {
+  role_id     Int       @id @default(autoincrement()) @db.SmallInt
+  role_name   String?   @db.VarChar(100)
+  created_by  Int?      @db.SmallInt
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+  updated_at  DateTime? @db.Timestamp(6)
+  role_status String?   @db.VarChar(10)
+}
+
+model user_group {
+  user_group_id   Int     @id(map: "user_type_pkey") @default(autoincrement()) @db.SmallInt
+  user_group_name String? @db.VarChar(50)
+}
+
+model user_role {
+  user_id         Int       @default(autoincrement()) @db.SmallInt
+  role_id         Int       @db.SmallInt
+  created_by      Int?      @db.SmallInt
+  created_at      DateTime? @default(now()) @db.Timestamp(6)
+  updated_at      DateTime? @db.Timestamp(6)
+  userRole_status String?   @db.VarChar(10)
+  user_role_id    Int       @id @default(autoincrement()) @db.SmallInt
+}
