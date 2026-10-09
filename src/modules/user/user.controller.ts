@@ -12,6 +12,11 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @Get('getfcmtoken')
+  getFcmToken() {
+    return this.userService.getFcmToken();
+  }
+
   @Get('getByVillageIds')
   getByVillageIds(@Query('village_id') villageIdQuery: any) {
     let ids: number[] = [];

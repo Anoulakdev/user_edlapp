@@ -34,6 +34,20 @@ export class UserService {
     };
   }
 
+  async getFcmToken() {
+    const data = await this.prisma.users.findMany({
+      select: {
+        user_id: true,
+        access_noti: true,
+      },
+    });
+    return {
+      message: 'Operation successfully',
+      statusCode: 200,
+      data,
+    };
+  }
+
   async getByVillageIds(ids: number[]) {
     const data = await this.prisma.users.findMany({
       where: {
