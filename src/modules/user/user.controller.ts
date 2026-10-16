@@ -1,15 +1,35 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiKeyGuard } from '../auth/guards/api-key.guard';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 @UseGuards(ApiKeyGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Post()
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
+  }
+
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  findAll(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('search') search?: string,
+  ) {
+    return this.userService.findAll(page, limit, search);
   }
 
   @Get('getfcmtoken')
@@ -53,5 +73,10 @@ export class UserController {
   @Get('getUserById/:id')
   getUserById(@Param('id') id: string) {
     return this.userService.findOne(+id);
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string) {
+    return this.userService.update(+id);
   }
 }
