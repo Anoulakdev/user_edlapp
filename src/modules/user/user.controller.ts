@@ -33,8 +33,23 @@ export class UserController {
   }
 
   @Get('getfcmtoken')
-  getFcmToken() {
-    return this.userService.getFcmToken();
+  getFcmToken(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('all') all?: string,
+    @Query('last_id') lastId?: string,
+  ) {
+    return this.userService.getFcmToken(
+      page ? Number(page) : undefined,
+      limit ? Number(limit) : undefined,
+      all === 'true',
+      lastId ? Number(lastId) : undefined,
+    );
+  }
+
+  @Get('getfcm')
+  getFCM() {
+    return this.userService.getFCM();
   }
 
   @Get('getByVillageIds')

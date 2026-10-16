@@ -1,10 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
+  private fcmTotalCache: { total: number; timestamp: number } | null = null;
+
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -13,6 +18,9 @@ export class UserService {
     const existingUser = await this.prisma.users.findFirst({
       where: {
         phone_no: phoneNo,
+      },
+      select: {
+        user_id: true,
       },
     });
 
@@ -85,6 +93,7 @@ export class UserService {
       otp_end: true,
       otp_cycle: true,
       access_noti: true,
+      created_at: true,
     };
 
     const where: any = {};
@@ -97,60 +106,162 @@ export class UserService {
       ];
     }
 
-    if (page !== undefined || limit !== undefined) {
-      const pageNum = Math.max(1, Number(page) || 1);
-      const limitNum = Math.max(1, Number(limit) || 10);
-      const skip = (pageNum - 1) * limitNum;
-      const take = limitNum;
+    // Enforce safe pagination by default to prevent full-table memory explosion
+    const pageNum = Math.max(1, Number(page) || 1);
+    const limitNum = Math.min(100, Math.max(1, Number(limit) || 10));
+    const skip = (pageNum - 1) * limitNum;
+    const take = limitNum;
 
-      const [data, total] = await Promise.all([
-        this.prisma.users.findMany({
-          where,
-          orderBy: {
-            user_id: 'desc',
-          },
-          select,
-          skip,
-          take,
-        }),
-        this.prisma.users.count({ where }),
-      ]);
+    const [data, total] = await Promise.all([
+      this.prisma.users.findMany({
+        where,
+        orderBy: {
+          user_id: 'desc',
+        },
+        select,
+        skip,
+        take,
+      }),
+      this.prisma.users.count({ where }),
+    ]);
 
-      const totalPages = Math.ceil(total / limitNum);
-
-      return {
-        message: 'Operation successfully',
-        statusCode: 200,
-        data,
-        total,
-        page: pageNum,
-        limit: limitNum,
-        totalPages,
-      };
-    }
-
-    const data = await this.prisma.users.findMany({
-      where,
-      orderBy: {
-        user_id: 'desc',
-      },
-      select,
-    });
+    const totalPages = Math.ceil(total / limitNum);
 
     return {
       message: 'Operation successfully',
       statusCode: 200,
       data,
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages,
     };
   }
 
-  async getFcmToken() {
+  async getFcmToken(
+    page?: number,
+    limit?: number,
+    all: boolean = false,
+    lastId?: number,
+  ) {
+    const where = {
+      access_noti: {
+        not: null,
+        notIn: ['', 'demo', 'null', 'undefined', 'DEMO', 'NULL', 'UNDEFINED'],
+      },
+    };
+
+    // If caller explicitly requests all records at once
+    if (all) {
+      const data = await this.prisma.users.findMany({
+        where,
+        select: {
+          user_id: true,
+          access_noti: true,
+        },
+        orderBy: {
+          user_id: 'asc',
+        },
+      });
+
+      return {
+        message: 'Operation successfully',
+        statusCode: 200,
+        data,
+        total: data.length,
+      };
+    }
+
+    const l = Math.max(1, Math.min(Number(limit) || 50000, 100000));
+
+    // Fast cursor/keyset pagination if lastId is provided
+    if (lastId && !isNaN(Number(lastId))) {
+      const cursorWhere: any = {
+        ...where,
+        user_id: { gt: Number(lastId) },
+      };
+
+      const data = await this.prisma.users.findMany({
+        where: cursorWhere,
+        select: {
+          user_id: true,
+          access_noti: true,
+        },
+        take: l,
+        orderBy: {
+          user_id: 'asc',
+        },
+      });
+
+      return {
+        message: 'Operation successfully',
+        statusCode: 200,
+        data,
+        limit: l,
+        count: data.length,
+        hasMore: data.length === l,
+        nextLastId: data.length > 0 ? data[data.length - 1].user_id : null,
+      };
+    }
+
+    // Default to high-performance chunked pagination with count caching (60s TTL)
+    const p = Math.max(1, Number(page) || 1);
+    const skip = (p - 1) * l;
+
+    const now = Date.now();
+    let totalPromise: Promise<number>;
+
+    if (this.fcmTotalCache && now - this.fcmTotalCache.timestamp < 60000) {
+      totalPromise = Promise.resolve(this.fcmTotalCache.total);
+    } else {
+      totalPromise = this.prisma.users.count({ where }).then((t) => {
+        this.fcmTotalCache = { total: t, timestamp: Date.now() };
+        return t;
+      });
+    }
+
+    const [total, data] = await Promise.all([
+      totalPromise,
+      this.prisma.users.findMany({
+        where,
+        select: {
+          user_id: true,
+          access_noti: true,
+        },
+        skip,
+        take: l,
+        orderBy: {
+          user_id: 'asc',
+        },
+      }),
+    ]);
+
+    return {
+      message: 'Operation successfully',
+      statusCode: 200,
+      data,
+      total,
+      page: p,
+      limit: l,
+      totalPages: Math.ceil(total / l),
+    };
+  }
+
+  async getFCM() {
     const data = await this.prisma.users.findMany({
+      where: {
+        user_id: 51,
+        access_noti: {
+          not: null,
+          notIn: ['', 'demo', 'null', 'undefined', 'DEMO', 'NULL', 'UNDEFINED'],
+        },
+      },
       select: {
         user_id: true,
         access_noti: true,
       },
     });
+
     return {
       message: 'Operation successfully',
       statusCode: 200,
@@ -159,6 +270,14 @@ export class UserService {
   }
 
   async getByVillageIds(ids: number[]) {
+    if (!ids || ids.length === 0) {
+      return {
+        message: 'Operation successfully',
+        statusCode: 200,
+        data: [],
+      };
+    }
+
     const data = await this.prisma.users.findMany({
       where: {
         village_id: {
@@ -169,18 +288,7 @@ export class UserService {
         user_id: true,
         username: true,
         phone_no: true,
-        email: true,
-        user_image: true,
-        users_status: true,
-        last_login: true,
-        ip_address: true,
-        birthday: true,
-        province_id: true,
-        district_id: true,
         village_id: true,
-        otp_start: true,
-        otp_end: true,
-        otp_cycle: true,
         access_noti: true,
       },
     });
@@ -217,6 +325,11 @@ export class UserService {
         access_noti: true,
       },
     });
+
+    if (!data) {
+      throw new NotFoundException(`User #${id} not found`);
+    }
+
     return {
       message: 'Operation successfully',
       statusCode: 200,
@@ -225,7 +338,16 @@ export class UserService {
   }
 
   async update(id: number) {
-    const data = await this.prisma.users.update({
+    const exists = await this.prisma.users.findUnique({
+      where: { user_id: id },
+      select: { user_id: true },
+    });
+
+    if (!exists) {
+      throw new NotFoundException(`User #${id} not found`);
+    }
+
+    await this.prisma.users.update({
       where: {
         user_id: id,
       },
@@ -234,6 +356,7 @@ export class UserService {
         users_status: 'A',
       },
     });
+
     return {
       message: 'update successfully',
       statusCode: 200,
